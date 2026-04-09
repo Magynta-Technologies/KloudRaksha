@@ -1,0 +1,49 @@
+# --- System / OS Files ---
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# --- IDEs / Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Dependencies ---
+node_modules/
+**/node_modules/
+package-lock.json
+yarn.lock
+
+# --- Security & Environment (CRITICAL) ---
+.env
+.env.*
+!.env.example
+secrets.json
+*.pem
+*.key
+certs/
+
+# --- Python / Backend ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+build/
+dist/
+
+# --- Project Specific (KloudRaksha) ---
+# Ignore all Prowler outputs to prevent path length and secret scanning issues
+server/prowler_outputs/
+**/prowler_outputs/**
+*.csv
+*.json
+*.html
+
+# --- Infrastructure / Cloud ---
+.terraform/
+*.tfstate
+*.tfstate.backup

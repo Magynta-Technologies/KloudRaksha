@@ -1,0 +1,45 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - one-am-deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SSH_KEY_PATH: ~/.ssh/kloudraksha_ec2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > $SSH_KEY_PATH
+          chmod 600 $SSH_KEY_PATH
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Sync project to EC2
+        run: |
+          rsync -az --delete \
+            --exclude '.git/' \
+            --exclude '.github/workflows/deploy.yml' \
+            --exclude '*.env' \
+            --exclude '*.env.*' \
+            --exclude 'backend/.env*' \
+            --exclude 'frontend/.env*' \
+            --exclude 'server/.env*' \
+            -e "ssh -i $SSH_KEY_PATH" \
+            ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/kloudraksha
+
+      - name: Deploy with Docker Compose
+        run: |
+          ssh -i $SSH_KEY_PATH ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} <<'EOF'
+            set -e
+            cd ~/kloudraksha
+            docker compose pull
+            docker compose up -d --build
+            docker system prune -f
+          EOF

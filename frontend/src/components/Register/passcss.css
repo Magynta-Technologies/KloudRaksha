@@ -1,0 +1,7 @@
+
+.password-strength-indicator ul li {
+    opacity: 10;
+    transform: translateX(20px);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+  }
+  
